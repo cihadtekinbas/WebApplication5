@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.Web.Http.Owin</name>
+  </assembly>
+  <members>
+    <member name="T:System.Net.Http.OwinHttpRequestMessageExtensions">
+      <summary>
+        <see cref="T:System.Net.Http.HttpRequestMessage" /> sınıfı için genişletme yöntemleri sağlar.</summary>
+    </member>
+    <member name="M:System.Net.Http.OwinHttpRequestMessageExtensions.GetOwinContext(System.Net.Http.HttpRequestMessage)">
+      <summary>Belirtilen istek için OWIN bağlamını alır.</summary>
+      <returns>Varsa belirtilen bağlam için OWIN ortamı; aksi takdirde <see cref="null" />.</returns>
+      <param name="request">HTTP isteği iletisi.</param>
+    </member>
+    <member name="M:System.Net.Http.OwinHttpRequestMessageExtensions.GetOwinEnvironment(System.Net.Http.HttpRequestMessage)">
+      <summary>Belirtilen istek için OWIN ortamını alır.</summary>
+      <returns>Varsa belirtilen istek için OWIN ortamı; aksi takdirde <see cref="null" />.</returns>
+      <param name="request">HTTP isteği iletisi.</param>
+    </member>
+    <member name="M:System.Net.Http.OwinHttpRequestMessageExtensions.SetOwinContext(System.Net.Http.HttpRequestMessage,Microsoft.Owin.IOwinContext)">
+      <summary>Belirtilen istek için OWIN bağlamını ayarlar.</summary>
+      <param name="request">HTTP isteği iletisi.</param>
+      <param name="context">Ayarlanacak OWIN bağlamı.</param>
+    </member>
+    <member name="M:System.Net.Http.OwinHttpRequestMessageExtensions.SetOwinEnvironment(System.Net.Http.HttpRequestMessage,System.Collections.Generic.IDictionary{System.String,System.Object})">
+      <summary>Belirtilen istek için OWIN ortamını ayarlar.</summary>
+      <param name="request">HTTP isteği iletisi.</param>
+      <param name="environment">Ayarlanacak OWIN ortamı.</param>
+    </member>
+    <member name="T:System.Web.Http.HostAuthenticationAttribute">
+      <summary>OWIN ara yazılımı üzerinden kimlik doğrulayan bir kimlik doğrulaması özniteliğini temsil eder.</summary>
+    </member>
+    <member name="M:System.Web.Http.HostAuthenticationAttribute.#ctor(System.String)">
+      <summary>
+        <see cref="T:System.Web.Http.HostAuthenticationAttribute" /> sınıfının yeni bir örneğini başlatır.</summary>
+      <param name="authenticationType">Kullanılacak OWIN ara yazılımının kimlik doğrulaması türü.</param>
+    </member>
+    <member name="P:System.Web.Http.HostAuthenticationAttribute.AllowMultiple"></member>
+    <member name="M:System.Web.Http.HostAuthenticationAttribute.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)"></member>
+    <member name="P:System.Web.Http.HostAuthenticationAttribute.AuthenticationType">
+      <summary>Kullanılacak OWIN ara yazılımının kimlik doğrulaması türünü alır.</summary>
+    </member>
+    <member name="M:System.Web.Http.HostAuthenticationAttribute.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)"></member>
+    <member name="T:System.Web.Http.HostAuthenticationFilter">
+      <summary>OWIN ara yazılımı üzerinden kimlik doğrulayan bir kimlik doğrulaması filtresini temsil eder.</summary>
+    </member>
+    <member name="M:System.Web.Http.HostAuthenticationFilter.#ctor(System.String)">
+      <summary>
+        <see cref="T:System.Web.Http.HostAuthenticationFilter" /> sınıfının yeni bir örneğini başlatır.</summary>
+      <param name="authenticationType">Kullanılacak OWIN ara yazılımının kimlik doğrulaması türü.</param>
+    </member>
+    <member name="P:System.Web.Http.HostAuthenticationFilter.AllowMultiple">
+      <summary>Filtrenin birden çok kimlik doğrulamasına izin verip vermediğini belirten bir değer alır.</summary>
+      <returns>Filtre birden çok kimlik doğrulamasına izin veriyorsa true, aksi takdirde false.</returns>
+    </member>
+    <member name="M:System.Web.Http.HostAuthenticationFilter.AuthenticateAsync(System.Web.Http.Filters.HttpAuthenticationContext,System.Threading.CancellationToken)">
+      <summary>İsteğin kimliğini zaman uyumsuz olarak doğrular.</summary>
+      <returns>Kimlik doğrulamasını tamamlayan görev.</returns>
+      <param name="context">Kimlik doğrulaması bağlamı.</param>
+      <param name="cancellationToken">İptal belirteci.</param>
+    </member>
+    <member name="P:System.Web.Http.HostAuthenticationFilter.AuthenticationType">
+      <summary>Kullanılacak OWIN ara yazılımının kimlik doğrulaması türünü alır.</summary>
+      <returns>Kullanılacak OWIN ara yazılımının kimlik doğrulaması türü.</returns>
+    </member>
+    <member name="M:System.Web.Http.HostAuthenticationFilter.ChallengeAsync(System.Web.Http.Filters.HttpAuthenticationChallengeContext,System.Threading.CancellationToken)">
+      <summary>Bir kimlik doğrulamasını zaman uyumsuz olarak sınar.</summary>
+      <returns>Sınamayı tamamlayan görev.</returns>
+      <param name="context">Bağlam.</param>
+      <param name="cancellationToken">İptal belirteci.</param>
+    </member>
+    <member name="T:System.Web.Http.OwinHttpConfigurationExtensions">
+      <summary>
+        <see cref="T:System.Web.Http.HttpConfiguration" /> sınıfı için genişletme yöntemleri sağlar.</summary>
+    </member>
+    <member name="M:System.Web.Http.OwinHttpConfigurationExtensions.SuppressDefaultHostAuthentication(System.Web.Http.HttpConfiguration)">
+      <summary>Ana bilgisayarın varsayılan kimlik doğrulamasının atlanmasını sağlar.</summary>
+      <param name="configuration">Sunucu yapılandırması.</param>
+    </member>
+    <member name="T:System.Web.Http.Owin.HttpMessageHandlerAdapter">
+      <summary>Çağrıldığında bir <see cref="T:System.Net.Http.HttpMessageHandler" /> öğesine istekler gönderen OWIN bileşenini temsil eder.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerAdapter.#ctor(Microsoft.Owin.OwinMiddleware,System.Net.Http.HttpMessageHandler,System.Web.Http.Hosting.IHostBufferPolicySelector)">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> sınıfının yeni bir örneğini başlatır.</summary>
+      <param name="next">Ardışık düzende sonraki bileşen.</param>
+      <param name="messageHandler">İsteklerin gönderileceği <see cref="T:System.Net.Http.HttpMessageHandler" />.</param>
+      <param name="bufferPolicySelector">İsteklerin ve yanıtların arabelleğe alınıp alınmayacağını belirleyen <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" />.</param>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerAdapter.#ctor(Microsoft.Owin.OwinMiddleware,System.Web.Http.Owin.HttpMessageHandlerOptions)">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> sınıfının yeni bir örneğini başlatır.</summary>
+      <param name="next">Ardışık düzende sonraki bileşen.</param>
+      <param name="options">Bu bağdaştırıcıyı yapılandırma seçenekleri.</param>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerAdapter.AppDisposing">
+      <summary>Bu bileşenin temizlenmesini tetikleyen iptal belirtecini alır.</summary>
+      <returns>İptal belirteci.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerAdapter.BufferPolicySelector">
+      <summary>İsteklerin ve yanıtların arabelleğe alınıp alınmayacağını belirleyen <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" /> öğesini alır.</summary>
+      <returns>İsteklerin ve yanıtların arabelleğe alınıp alınmayacağını belirleyen <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" />.</returns>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerAdapter.Dispose">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> sınıfının geçerli örneği tarafından kullanılan tüm kaynakları serbest bırakır.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerAdapter.Dispose(System.Boolean)">
+      <summary>Yönetilmeyen ve isteğe bağlı olarak yönetilen kaynakları serbest bırakır.</summary>
+      <param name="disposing">true Hem yönetilen hem de yönetilmeyen kaynakları serbest bırakmak için; yalnızca yönetilmeyen kaynakları serbest bırakmak için false.</param>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerAdapter.ExceptionHandler">
+      <summary>İşlenmeyen özel durumları işlemek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionHandler" /> öğesini alır.</summary>
+      <returns>İşlenmeyen özel durumları işlemek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionHandler" /> öğesi.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerAdapter.ExceptionLogger">
+      <summary>İşlenmeyen özel durumları günlüğe kaydetmek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionLogger" /> öğesini alır.</summary>
+      <returns>İşlenmeyen özel durumları günlüğe kaydetmek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionLogger" /> öğesi.</returns>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerAdapter.Invoke(Microsoft.Owin.IOwinContext)">
+      <returns>
+        <see cref="T:System.Threading.Tasks.Task" /> döndürür.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerAdapter.MessageHandler">
+      <summary>İsteklerin gönderileceği <see cref="T:System.Net.Http.HttpMessageHandler" /> öğesini alır.</summary>
+      <returns>İsteklerin gönderileceği <see cref="T:System.Net.Http.HttpMessageHandler" />.</returns>
+    </member>
+    <member name="T:System.Web.Http.Owin.HttpMessageHandlerOptions">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> yapılandırma seçeneklerini temsil eder.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.HttpMessageHandlerOptions.#ctor">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerOptions" /> sınıfının yeni bir örneğini başlatır.</summary>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerOptions.AppDisposing">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> temizlemeyi tetikleyen <see cref="T:System.Threading.CancellationToken" /> öğesini alır veya ayarlar.</summary>
+      <returns>
+        <see cref="T:System.Web.Http.Owin.HttpMessageHandlerAdapter" /> temizlemeyi tetikleyen <see cref="T:System.Threading.CancellationToken" /> öğesi.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerOptions.BufferPolicySelector">
+      <summary>İsteklerin ve yanıtların arabelleğe alınıp alınmayacağını belirleyen <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" /> öğesini alır veya ayarlar.</summary>
+      <returns>İsteklerin ve yanıtların arabelleğe alınıp alınmayacağını belirleyen <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" />.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerOptions.ExceptionHandler">
+      <summary>İşlenmeyen özel durumları işlemek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionHandler" /> öğesini alır veya ayarlar.</summary>
+      <returns>İşlenmeyen özel durumları işlemek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionHandler" /> öğesi.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerOptions.ExceptionLogger">
+      <summary>İşlenmeyen özel durumları günlüğe kaydetmek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionLogger" /> öğesini alır veya ayarlar.</summary>
+      <returns>İşlenmeyen özel durumları günlüğe kaydetmek için kullanılan <see cref="T:System.Web.Http.ExceptionHandling.IExceptionLogger" /> öğesi.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.HttpMessageHandlerOptions.MessageHandler">
+      <summary>İsteklerin gönderileceği <see cref="T:System.Net.Http.HttpMessageHandler" /> öğesini alır veya ayarlar.</summary>
+      <returns>İsteklerin gönderileceği <see cref="T:System.Net.Http.HttpMessageHandler" />.</returns>
+    </member>
+    <member name="T:System.Web.Http.Owin.OwinBufferPolicySelector">
+      <summary>OWIN Web API bağdaştırıcısı tarafından kullanılan varsayılan <see cref="T:System.Web.Http.Hosting.IHostBufferPolicySelector" /> uygulamasını sağlar.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.OwinBufferPolicySelector.#ctor">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.OwinBufferPolicySelector" /> sınıfının yeni bir örneğini başlatır.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.OwinBufferPolicySelector.UseBufferedInputStream(System.Object)">
+      <summary>Ana bilgisayarın HttpRequestMessage varlık gövdesini arabelleğe alıp almayacağını belirler.</summary>
+      <returns>Arabelleğe alma kullanılacaksa true şeklindedir, aksi halde akışla alınan istek kullanılmalıdır.</returns>
+      <param name="hostContext">Ana bilgisayar bağlamı.</param>
+    </member>
+    <member name="M:System.Web.Http.Owin.OwinBufferPolicySelector.UseBufferedOutputStream(System.Net.Http.HttpResponseMessage)">
+      <summary>Ana bilgisayarın HttpResponseMessage varlık gövdesini arabelleğe alıp almayacağını belirler.</summary>
+      <returns>Arabelleğe alma kullanılacaksa true şeklindedir, aksi halde akışla alınan yanıt kullanılmalıdır.</returns>
+      <param name="response">Yanıt.</param>
+    </member>
+    <member name="T:System.Web.Http.Owin.OwinExceptionCatchBlocks">
+      <summary>Bu derlemede kullanılan yakalama bloklarını sağlar.</summary>
+    </member>
+    <member name="P:System.Web.Http.Owin.OwinExceptionCatchBlocks.HttpMessageHandlerAdapterBufferContent">
+      <summary>System.Web.Http.Owin.HttpMessageHandlerAdapter.BufferContent içindeki yakalama bloğunu alır.</summary>
+      <returns>System.Web.Http.Owin.HttpMessageHandlerAdapter.BufferContent içindeki yakalama bloğu.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.OwinExceptionCatchBlocks.HttpMessageHandlerAdapterBufferError">
+      <summary>System.Web.Http.Owin.HttpMessageHandlerAdapter.BufferError içindeki yakalama bloğunu alır.</summary>
+      <returns>System.Web.Http.Owin.HttpMessageHandlerAdapter.BufferError içindeki yakalama bloğu.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.OwinExceptionCatchBlocks.HttpMessageHandlerAdapterComputeContentLength">
+      <summary>System.Web.Http.Owin.HttpMessageHandlerAdapter.ComputeContentLength içindeki yakalama bloğunu alır.</summary>
+      <returns>System.Web.Http.Owin.HttpMessageHandlerAdapter.ComputeContentLength içindeki yakalama bloğu.</returns>
+    </member>
+    <member name="P:System.Web.Http.Owin.OwinExceptionCatchBlocks.HttpMessageHandlerAdapterStreamContent">
+      <summary>System.Web.Http.Owin.HttpMessageHandlerAdapter.StreamContent içindeki yakalama bloğunu alır.</summary>
+      <returns>System.Web.Http.Owin.HttpMessageHandlerAdapter.StreamContent içindeki yakalama bloğu.</returns>
+    </member>
+    <member name="T:System.Web.Http.Owin.PassiveAuthenticationMessageHandler">
+      <summary>Tüm OWIN kimlik doğrulaması ara yazılımlarını pasif olarak işleme alan bir ileti işleyicisini temsil eder.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.PassiveAuthenticationMessageHandler.#ctor">
+      <summary>
+        <see cref="T:System.Web.Http.Owin.PassiveAuthenticationMessageHandler" /> sınıfının yeni bir örneğini başlatır.</summary>
+    </member>
+    <member name="M:System.Web.Http.Owin.PassiveAuthenticationMessageHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+      <summary>Bir ileti isteğini zaman uyumsuz olarak gönderir.</summary>
+      <returns>Zaman uyumsuz işlemi tamamlayan görev.</returns>
+      <param name="request">İleti isteği.</param>
+      <param name="cancellationToken">İptal belirteci.</param>
+    </member>
+  </members>
+</doc>

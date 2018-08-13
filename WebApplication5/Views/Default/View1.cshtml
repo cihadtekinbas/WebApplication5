@@ -1,0 +1,550 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <title> Harita Mahalle ve Kapı Çalışması</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ol-popup@3.0.0/src/ol-popup.css" />
+    <script src="https://unpkg.com/ol-popup@3.0.0"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/jspanel.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/jspanel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/modal/jspanel.modal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/tooltip/jspanel.tooltip.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/hint/jspanel.hint.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/layout/jspanel.layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/contextmenu/jspanel.contextmenu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.0.0/dist/extensions/dock/jspanel.dock.js"></script>
+
+</head>
+
+<body>
+
+    <div id="map" class="map" style="height: 600px; width: 1024px; margin: auto;">
+        <input id="KapiCiz" type="button" value="Kapı" />
+        <input id="KapıButton" type="button" value="KapıSearch" />
+        <input id="MahalleButton" type="button" value="MahalleSearch" />
+        <input id="SelectButton" type="button" value="Select" />
+        <input id="DeleteButton" type="button" value="Delete Mahalle ve Kapı" />
+
+
+
+
+        <input id="MahalleCiz" type="button" value="Mahalle" />
+    </div>
+
+
+    <script>
+
+        var select;
+        var raster = (new ol.layer.Tile({
+            //  visible: true,
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: 'AiyrAxsO-YLqsMorOKYit4JRPtVtjAQjY1wiDTATT-U7aBQU85_Myqo41rqFwe3z',
+                imagerySet: 'AerialWithLabels'
+                // use maxZoom 19 to see stretched tiles instead of the BingMaps
+                // "no photos at this zoom level" tiles
+                // maxZoom: 19
+            })
+        }));
+
+        var map = new ol.Map({
+            layers: [raster],
+            target: 'map',
+            view: new ol.View({
+                center: [3750917.8520101686, 4754994.655564245],
+                zoom: 6
+            })
+        });
+
+
+
+
+
+        var dist = [];
+        var format = new ol.format.WKT();
+        var results = [];
+        var count = 0;
+
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:51712/api/Mahalles',
+            dataType: "JSON",
+            async: false,
+            success: function (data) {
+
+                $(data).each(function (item) {
+                    var feature = format.readFeature(data[item].Koordinatlar, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    feature.set('MahalleAdi', data[item].MahalleName);
+                    feature.set('MahalleId', data[item].Id);
+                    dist.push(feature);
+
+
+                })
+
+
+
+            }
+        });
+
+        var Mahallevector = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: dist
+            })
+        });
+        map.addLayer(Mahallevector);
+
+        var dist2 = [];
+
+
+        var results = [];
+        $.ajax({
+            type: 'GET',
+            url: ' http://localhost:51712/api/Kapı',
+            dataType: "JSON",
+            async: false,
+            success: function (data) {
+
+                $(data).each(function (item) {
+                    var feature = format.readFeature(data[item].Koordinatlar, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    feature.set('MahalleKodu', data[item].MahalleKodu);
+                    feature.set('MahalleId', data[item].Id);
+                    dist2.push(feature);
+
+                })
+            }
+        });
+
+        var Kapivector1 = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: dist2
+            })
+        });
+        map.addLayer(Kapivector1);
+
+
+
+
+
+
+        var kapiEkle;
+        var mahalleEkle;
+        var draw, snap;
+        //Kapı butonu seçiliyken tıklanan yere Kapı no isteyen bir popup açıyor
+        var kapi = document.getElementById('KapiCiz');
+        kapi.addEventListener('click', function () {
+
+            map.removeInteraction(select);
+            map.removeInteraction(mahalleEkle);
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+
+            var source = new ol.source.Vector();
+            var kapiVector = new ol.layer.Vector({
+                source: source,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0.2)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ffcc33',
+                        width: 2
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({
+                            color: '#ffcc33'
+                        })
+                    })
+                })
+            });
+
+            var features = new ol.Collection();
+            var modify = new ol.interaction.Modify({
+                features: features,
+                deleteCondition: function (event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                }
+            });
+            map.addInteraction(modify);
+
+            map.addLayer(kapiVector);
+
+            kapiEkle = new ol.interaction.Draw({
+                source: kapiVector.getSource(),
+                type: ('Point')
+            });
+
+            map.addInteraction(kapiEkle);
+
+            kapiEkle.on('drawend', function (event) {
+                var tiklanilanNoktaVerileri = [];
+
+                var format = new ol.format.WKT();
+
+                var selFeatureWkt = format.writeGeometry(event.feature.getGeometry(), {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+
+                });
+
+                /*
+               // window.alert(selFeatureWkt);
+                var coordinate = event.feature.getGeometry().getCoordinates();
+
+                var lonlat = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:3857');
+              //  window.alert(lonlat);
+
+                var pos = lonlat;
+                window.alert(pos)
+
+                // Vienna marker
+                 marker = new ol.Overlay({
+                    position: pos,
+                    positioning: 'center-center',
+                    element: document.getElementById('marker'),
+                    stopEvent: false
+                });
+             //   markert.push(markert)
+              //  map.addOverlay(marker);
+
+                // Vienna label
+                 vienna = new ol.Overlay({
+                    position: pos,
+                    element: document.getElementById('vienna')
+                });
+              //  map.addOverlay(vienna);
+                */
+
+                // if (event.feature.getProperties().MahalleKodu == null || event.feature.getProperties().MahalleKodu == "")
+                var person = prompt("Kapının numarasını giriniz?", "1");
+                // else
+                //      window.prompt('bu yer dolu');
+
+                if (person == null || person == "") {
+                    txt = "User cancelled the prompt.";
+                } else {
+                    var code;
+                    Mahallevector.getSource().getFeatures().forEach(function (obje) {
+                        
+                        var objeExtend = obje.getGeometry().getExtent();
+
+                        var sonuc = ol.extent.intersects(objeExtend, event.feature.getGeometry().getExtent());
+                        if (sonuc) {
+                            code = obje.get('MahalleId');
+                            tiklanilanNoktaVerileri.push(obje.get('MahalleAdi') + '#' + obje.get('MahalleId'))
+                        }
+                    }
+                    );
+
+                    if (tiklanilanNoktaVerileri.length > 0) {
+                        
+                        alert(code);
+                        alert('Tıklanılan Nokta Verileri : ' + tiklanilanNoktaVerileri);
+                    }
+                    else {
+                        alert('Tıklanılan noktada mahalle verisi bulunamadı !');
+                    }
+
+
+
+                    //txt = person + " kapı  eklendi.";
+
+                    {
+                        var dataJSON = {
+                            Id:person,
+                            MahalleKodu: code,
+                            Koordinatlar: selFeatureWkt
+                        };
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: 'http://localhost:51712/api/Kapı',
+                            data: JSON.stringify(dataJSON),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (gelenDeg) {
+                                alert("KAPI Başarıyla Eklendi!");
+                            },
+                            error: function () {
+                                alert("KAPI Eklenirken Hata Oluştu!");
+                            }
+                        });
+
+
+                      
+
+
+                    }
+
+
+
+
+
+                }
+                //window.alert(txt);
+                //  event.feature.setProperties({
+                //     'KapıAdi': person,
+                //    'MahalleKodu': 12313
+                // })
+                //  console.log(event.feature, event.feature.getProperties());
+
+            });
+        });
+        //    map.addOverlay(markert[0]);
+
+        //Mahalle butonu seçiliyken tıklanan yere mahalle adı isteyen bir popup açıyor
+        var mahalle = document.getElementById('MahalleCiz');
+        mahalle.addEventListener('click', function () {
+            map.removeInteraction(select);
+
+            map.removeInteraction(kapiEkle);
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+
+            var source = new ol.source.Vector();
+            var mahalleVector = new ol.layer.Vector({
+                source: source,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0.2)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ffcc33',
+                        width: 2
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({
+                            color: '#ffcc33'
+                        })
+                    })
+                })
+            });
+            var features = new ol.Collection();
+            var modify = new ol.interaction.Modify({
+                features: features,
+                deleteCondition: function (event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                }
+            });
+            map.addInteraction(modify);
+            map.addLayer(mahalleVector);
+            mahalleEkle = new ol.interaction.Draw({
+                source: mahalleVector.getSource(),
+                type: ('Polygon')
+            });
+
+            map.addInteraction(mahalleEkle);
+
+
+
+
+            mahalleEkle.on('drawend', function (event) {
+
+                var format = new ol.format.WKT();
+
+                var selFeatureWkt = format.writeGeometry(event.feature.getGeometry(), {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+
+                });
+                //      window.alert(selFeatureWkt);
+
+                //                if (event.feature.getProperties().MahalleId == null || event.feature.getProperties().MahalleId == "")
+                var person = prompt("Mahallenin adını giriniz?", "Çankaya");
+                //              else
+                //                window.prompt('bu yer dolu');
+
+                if (person == null || person == "") {
+                    txt = "User cancelled the prompt.";
+                } else {
+                    // txt = person + "mahalle eklendi.";
+                   
+
+                    {
+
+                        var dataJSON = {
+                            MahalleName: person,
+                            Koordinatlar: selFeatureWkt
+                        };
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: 'http://localhost:51712/api/Mahalles',
+                            data: JSON.stringify(dataJSON),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (gelenDeg) {
+                                alert("MAHALLE Başarıyla Eklendi!");
+                            },
+                            error: function () {
+                                alert("MAHALLE Eklenirken Hata Oluştu!");
+                            }
+                        });
+
+
+
+
+
+
+                        var degerler = {
+                            baslik: person,
+                            kordinatlar: selFeatureWkt
+                        };
+
+
+                    }
+
+
+
+                }
+
+
+            });
+        });
+
+
+        MahalleButton.onclick = function () {
+            jsPanel.create({
+                theme: 'primary',
+                headerTitle: 'Search Mahalle',
+                position: 'center-top 0 58',
+                contentSize: '500 370',
+                content: "<iframe src='http://localhost:51712/Default/View2' width='100%' height='100%'></iframe>",
+                callback: function () {
+                    this.content.style.padding = '20px';
+                }
+            });
+        }
+
+        KapıButton.onclick = function () {
+            jsPanel.create({
+                theme: 'primary',
+                headerTitle: 'Search Kapı',
+                position: 'center-top 0 58',
+                contentSize: '500 370',
+                content: "<iframe src='http://localhost:51712/Default/View3' width='100%' height='100%'></iframe>",
+                callback: function () {
+                    this.content.style.padding = '20px';
+                }
+            });
+        }
+
+
+        DeleteButton.onclick = function () {
+            var DistrictCode;
+            var PlaceNo;
+            alert("Silmek istedğiniz yeri şeçin ");
+            select = new ol.interaction.Select();
+            map.addInteraction(select);
+            var features = select.getFeatures();
+            select.getFeatures().on("add", function (e) {
+                DistrictCode = e.element.getProperties().MahalleId;
+                PlaceNo = e.element.getProperties().MahalleKodu;
+
+                if (DistrictCode != undefined) {
+
+
+                    if (PlaceNo == undefined) {
+                        alert("Mahalle silindi:" + DistrictCode);
+                        $.ajax({
+                            url: "/api/Mahalles/" + DistrictCode,
+                            type: "DELETE", // <- Change here
+                            contentType: "application/json",
+                            success: function () {
+                                alert("Proposal deleted successfully.");
+                                //  ReloadGrid();
+                            },
+                            error: function () {
+                            }
+                        });
+
+                    }
+                    else {
+                        alert("Kapı silindi:" + DistrictCode);
+                        $.ajax({
+                            url: "/api/Kapı/" + DistrictCode,
+                            type: "DELETE", // <- Change here
+                            contentType: "application/json",
+                            success: function () {
+                                alert("Proposal deleted successfully.");
+                                //  ReloadGrid();
+                            },
+                            error: function () {
+                            }
+                        });
+
+
+                    }
+                }
+
+
+                // overlay.setPosition(coordinate);
+            });
+
+
+
+
+
+
+
+            //removeInteraction(select);
+        };
+        SelectButton.onclick = function () {
+            map.removeInteraction(mahalleEkle);
+
+            select = new ol.interaction.Select();
+            //make sure you add select interaction to map
+            map.addInteraction(select);
+            var features = select.getFeatures();
+
+            select.getFeatures().on("add", function (e) {
+                var DistrictName = e.element.getProperties().MahalleAdi;
+                var DistrictCode = e.element.getProperties().MahalleId;
+                var PlaceNo = e.element.getProperties().MahalleKodu;
+                if (PlaceNo == undefined)
+                    alert("Mahalle ismi: " + DistrictName + " Mahalle kodu: " + DistrictCode);
+                else
+                    alert("Kapı No: " + DistrictCode + " Mahaelle Kodu" + PlaceNo);
+                // map.overlay.setPosition(coordinate);
+            });
+
+
+
+
+
+
+            // now you have an ol.Collection of features that you can add features to
+            // features.push(feature);
+            // now the pushed feature is highlighted
+
+            //to dehighlight, just simply remove the feature from select
+            // features.remove(feature);
+
+
+
+        };
+
+    </script>
+</body>
+</html>

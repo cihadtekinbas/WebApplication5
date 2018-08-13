@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <button id="sil">Sil</button>
+    <table id="tablo"></table>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+    <script type="text/javascript">
+       $(document).ready(function () {
+           Makaleler();
+       });
+       window.alert("cihad");
+
+
+       function Makaleler() {
+           $.ajax({
+               type: 'GET',
+               url: 'api/Mahalles',
+               dataType: "JSON",
+               success: function (data) {
+                   $('#tablo').html("");
+                   console.log(data);
+                   $(data.Result).each(function (item) {
+                       console.log('cihad'+data);
+
+
+
+                   })
+       }
+           });
+       }
+
+
+
+
+
+
+    </script>
+</body>
+</html>
